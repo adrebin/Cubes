@@ -8,14 +8,15 @@ let rotateXVal = 0;
 let gameOver = false;
 let button;
 let permissionsButton; 
+let needPermissions = false;
+let permissionGranted = false;
+let errString = '';
 let pauseSpawn = 0;
 
 const xSlideAmount = 5;
 const rotateXAmount = 0.009
 
-let foundDeviceOrientation = false;
-let foundGamma = -9000;
-let errString = "...";
+
 
 let font;
 
@@ -46,12 +47,13 @@ function requesetPermissions(){
       .then(response => {
         if (response === 'granted') {
           window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
-          errString = "all good?"
+          permissionGranted = true;
+          permissionsButton.hide();
         }
       })
       .catch(err => {
         console.log("Permission denied:", err);
-        errString = "permission denied:" + err;
+        errString = "Pmerissions denied, open a new page and click button again?"
       });
 }
 
@@ -72,30 +74,15 @@ function setup() {
   pauseSpawn = 1000;
   introBoxes();
  
-  
-
-  // const hammer = new Hammer(swipeArea);
-  // hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
-
-  // // Detect only left and right swipe gestures
-  // hammer.on('swipeleft', function() {
-  //   xSlide -= xSlideAmount;
-  //   rotateXVal = clampToBoundary(rotateXVal - rotateXAmount)
-  // });
-
-  // hammer.on('swiperight', function() {
-  //   xSlide += xSlideAmount;
-  //   rotateXVal = clampToBoundary(rotateXVal + rotateXAmount)
-  // });
 
   if (typeof window.DeviceOrientationEvent !== 'undefined' && window.DeviceOrientationEvent.requestPermission) {
-    foundDeviceOrientation = true
+    needPermissions = true
     permissionsButton.show();
     
   } else {
     // For older iOS versions (pre iOS 13.3) or non-iOS devices
     window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
-    errString = 'no device orientation found'
+    needPermissions = false;
   }
   
 }
@@ -223,7 +210,8 @@ function draw() {
   rotate(-rotateXVal);
   fill(0,0,0);
   textFont(font);
-  text(zSlide + " " + foundGamma + " " + errString, -300, -300);
+  textSize(24)
+  text(zSlide + " " + errString, -300, -300);
   pop();
 
   arrow.show(xSlide)
@@ -251,7 +239,7 @@ function draw() {
     button.show()
     button.position(350, 350);
     button.mousePressed(resetGame);
-  } else {
+  } else if(!needPermissions || (needPermissions && permissionGranted)) {
     checkIntercept(zSlide);
     zSlide += 10;
     pauseSpawn -= 5;
