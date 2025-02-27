@@ -9,6 +9,9 @@ let gameOver = false;
 let button;
 let pauseSpawn = 0;
 
+const xSlideAmount = 5;
+const rotateXAmount = 0.009
+
 let font;
 
 function preload() {
@@ -26,6 +29,20 @@ function setup() {
   pauseSpawn = 1000;
   introBoxes();
   // drawNBoxes(3, -200, 0, -200);
+  const swipeArea = document.body;
+  const hammer = new Hammer(swipeArea);
+  hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
+
+  // Detect only left and right swipe gestures
+  hammer.on('swipeleft', function() {
+    xSlide -= xSlideAmount;
+    rotateXVal = clampToBoundary(rotateXVal - rotateXAmount)
+  });
+
+  hammer.on('swiperight', function() {
+    xSlide += xSlideAmount;
+    rotateXVal = clampToBoundary(rotateXVal + rotateXAmount)
+  });
 }
 
 function drawNBoxes(numBoxes, xs, ys, zs){
@@ -55,30 +72,6 @@ function renderBoxes() {
 
 function introBoxes() {
   drawIntroBoxes(xSlide, zSlide, drawNBoxes)
-  // let startX = -1020
-  // for(let i = 0; i < 15; i++){
-  //   drawNBoxes(1, startX, 0, -zSlide - 1500)
-  //   startX += 60
-  // }
-
-
-  // startX = 100
-  // for(let i = 0; i < 20; i++){
-  //   drawNBoxes(1, startX, 0, -zSlide - 1500)
-  //   startX += 60
-  // }
-
-  // startZ = 1500
-  // for(let i = 0; i < 20; i++){
-  //   drawNBoxes(1, -120, 0, -zSlide - startZ)
-  //   startZ += 60
-  // }
-
-  // startZ = 1500
-  // for(let i = 0; i < 20; i++){
-  //   drawNBoxes(1, 100, 0, -zSlide - startZ)
-  //   startZ += 60
-  // }
 }
 
 function midGameDiamondBoxes(){
@@ -130,8 +123,6 @@ function clampToBoundary(value) {
 }
 
 function adjustXSlide(){
-  xSlideAmount = 5;
-  rotateXAmount = 0.009
   if(gameOver){
     return
   }
