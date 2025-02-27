@@ -13,6 +13,7 @@ const xSlideAmount = 5;
 const rotateXAmount = 0.009
 
 let foundDeviceOrientation = false;
+let foundGamma = 0;
 
 let font;
 
@@ -23,6 +24,7 @@ function preload() {
 function adjustXSlideWithTilt(event){
   // Get the gamma value, which is the tilt along the y-axis (left/right)
   let gamma = event.gamma;
+  let foundGamma = event.gamma;
 
   // Now you can use gamma to adjust xSlide and rotateXVal
   if (gamma < -10) { // Device is tilted left
@@ -205,7 +207,7 @@ function draw() {
   rotate(-rotateXVal);
   fill(0,0,0);
   textFont(font);
-  text(zSlide + " " +foundDeviceOrientation, -300, -300);
+  text(zSlide + " " +foundGamma, -300, -300);
   pop();
 
   arrow.show(xSlide)
