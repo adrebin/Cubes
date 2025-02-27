@@ -28,14 +28,17 @@ function adjustXSlideWithTilt(event){
   // Get the gamma value, which is the tilt along the y-axis (left/right)
   let gamma = event.gamma;
   let foundGamma = event.gamma;
+  if(gameOver){
+    return
+  }
 
   // Now you can use gamma to adjust xSlide and rotateXVal
-  if (gamma < 0) { // Device is tilted left
+  if (gamma < -5) { // Device is tilted left
     xSlide -= xSlideAmount;
     rotateXVal = clampToBoundary(rotateXVal - rotateXAmount);
   }
 
-  if (gamma > 0) { // Device is tilted right
+  if (gamma > 5) { // Device is tilted right
     xSlide += xSlideAmount;
     rotateXVal = clampToBoundary(rotateXVal + rotateXAmount);
   }
@@ -50,7 +53,7 @@ function requesetPermissions(){
           permissionGranted = true;
           permissionsButton.hide();
         } else {
-          errString = "Ok! Permission not granted. To try again, open in a new page."
+          errString = "Ok! To re-grant, open in a new page."
           permissionGranted = false;
         }
       })
