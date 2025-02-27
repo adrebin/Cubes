@@ -12,6 +12,8 @@ let pauseSpawn = 0;
 const xSlideAmount = 5;
 const rotateXAmount = 0.009
 
+let foundDeviceOrientation = false;
+
 let font;
 
 function preload() {
@@ -63,19 +65,20 @@ function setup() {
   // });
 
   if (typeof window.DeviceOrientationEvent !== 'undefined' && window.DeviceOrientationEvent.requestPermission) {
-  // iOS 13+ requires this to request permission
-  window.DeviceOrientationEvent.requestPermission()
-    .then(response => {
-      if (response === 'granted') {
-        window.addEventListener('deviceorientation', adjustXSlideWithTilt);
-      }
-    })
-    .catch(err => {
-      console.log("Permission denied:", err);
-    });
+    foundDeviceOrientation = true
+    // iOS 13+ requires this to request permission
+    window.DeviceOrientationEvent.requestPermission()
+      .then(response => {
+        if (response === 'granted') {
+          window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
+        }
+      })
+      .catch(err => {
+        console.log("Permission denied:", err);
+      });
 } else {
   // For older iOS versions (pre iOS 13.3) or non-iOS devices
-  window.addEventListener('deviceorientation', adjustXSlideWithTilt);
+  window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
 }
 }
 
@@ -202,7 +205,7 @@ function draw() {
   rotate(-rotateXVal);
   fill(0,0,0);
   textFont(font);
-  text(zSlide, -300, -300);
+  text(zSlide + " " +foundDeviceOrientation, -300, -300);
   pop();
 
   arrow.show(xSlide)
