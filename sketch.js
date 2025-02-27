@@ -65,6 +65,8 @@ function setup() {
 
   permissionsButton = createButton('grant tilt permissions');
   permissionsButton.hide();
+  permissionsButton.mousePressed(requesetPermissions)
+  permissionsButton.position(100, 100);
   
   this.arrow = new Arrow();
   pauseSpawn = 1000;
@@ -89,13 +91,13 @@ function setup() {
   if (typeof window.DeviceOrientationEvent !== 'undefined' && window.DeviceOrientationEvent.requestPermission) {
     foundDeviceOrientation = true
     permissionsButton.show();
-    permissionsButton.position(100, 100);
-    permissionsButton.onClicked(requesetPermissions)
+    
   } else {
     // For older iOS versions (pre iOS 13.3) or non-iOS devices
     window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
     errString = 'no device orientation found'
   }
+  
 }
 
 function drawNBoxes(numBoxes, xs, ys, zs){
