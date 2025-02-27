@@ -18,6 +18,23 @@ function preload() {
   font = loadFont('assets/LEMONMILK-Light.ttf');
 }
 
+function adjustXSlideWithTilt(event){
+  // Get the gamma value, which is the tilt along the y-axis (left/right)
+  let gamma = event.gamma;
+
+  // Now you can use gamma to adjust xSlide and rotateXVal
+  if (gamma < -10) { // Device is tilted left
+    xSlide -= xSlideAmount;
+    rotateXVal = clampToBoundary(rotateXVal - rotateXAmount);
+  }
+
+  if (gamma > 10) { // Device is tilted right
+    xSlide += xSlideAmount;
+    rotateXVal = clampToBoundary(rotateXVal + rotateXAmount);
+  }
+}
+
+
 function setup() {
   createCanvas(800, 600, WEBGL);
   zSlide = 0;
@@ -44,23 +61,22 @@ function setup() {
   //   xSlide += xSlideAmount;
   //   rotateXVal = clampToBoundary(rotateXVal + rotateXAmount)
   // });
-  if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', function(event) {
-          // Get the gamma value, which is the tilt along the y-axis (left/right)
-          let gamma = event.gamma;
 
-          // Now you can use gamma to adjust xSlide and rotateXVal
-          if (gamma < -10) { // Device is tilted left
-            xSlide -= xSlideAmount;
-            rotateXVal = clampToBoundary(rotateXVal - rotateXAmount);
-          }
-
-          if (gamma > 10) { // Device is tilted right
-            xSlide += xSlideAmount;
-            rotateXVal = clampToBoundary(rotateXVal + rotateXAmount);
-          }
-        });
-  }
+  if (typeof window.DeviceOrientationEvent !== 'undefined' && window.DeviceOrientationEvent.requestPermission) {
+  // iOS 13+ requires this to request permission
+  window.DeviceOrientationEvent.requestPermission()
+    .then(response => {
+      if (response === 'granted') {
+        window.addEventListener('deviceorientation', adjustXSlideWithTilt);
+      }
+    })
+    .catch(err => {
+      console.log("Permission denied:", err);
+    });
+} else {
+  // For older iOS versions (pre iOS 13.3) or non-iOS devices
+  window.addEventListener('deviceorientation', adjustXSlideWithTilt);
+}
 }
 
 function drawNBoxes(numBoxes, xs, ys, zs){
