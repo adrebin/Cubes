@@ -7,13 +7,15 @@ let xSlide = 0;
 let rotateXVal = 0;
 let gameOver = false;
 let button;
+let permissionsButton; 
 let pauseSpawn = 0;
 
 const xSlideAmount = 5;
 const rotateXAmount = 0.009
 
 let foundDeviceOrientation = false;
-let foundGamma = 0;
+let foundGamma = -9000;
+let errString = "...";
 
 let font;
 
@@ -38,6 +40,21 @@ function adjustXSlideWithTilt(event){
   }
 }
 
+function requesetPermissions(){
+  // iOS 13+ requires this to request permission
+    window.DeviceOrientationEvent.requestPermission()
+      .then(response => {
+        if (response === 'granted') {
+          window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
+          errString = "all good?"
+        }
+      })
+      .catch(err => {
+        console.log("Permission denied:", err);
+        errString = "permission denied:" + err;
+      });
+}
+
 
 function setup() {
   createCanvas(800, 600, WEBGL);
@@ -45,6 +62,9 @@ function setup() {
   perspective(70);
   button = createButton('start over');
   button.hide()
+
+  permissionsButton = createButton('grant tilt permissions');
+  button.hide();
   
   this.arrow = new Arrow();
   pauseSpawn = 1000;
@@ -68,20 +88,14 @@ function setup() {
 
   if (typeof window.DeviceOrientationEvent !== 'undefined' && window.DeviceOrientationEvent.requestPermission) {
     foundDeviceOrientation = true
-    // iOS 13+ requires this to request permission
-    window.DeviceOrientationEvent.requestPermission()
-      .then(response => {
-        if (response === 'granted') {
-          window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
-        }
-      })
-      .catch(err => {
-        console.log("Permission denied:", err);
-      });
-} else {
-  // For older iOS versions (pre iOS 13.3) or non-iOS devices
-  window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
-}
+    button.show();
+    button.position(100, 100);
+    button.onClicked(requesetPermissions)
+  } else {
+    // For older iOS versions (pre iOS 13.3) or non-iOS devices
+    window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
+    errString = 'no device orientation found'
+  }
 }
 
 function drawNBoxes(numBoxes, xs, ys, zs){
@@ -207,7 +221,7 @@ function draw() {
   rotate(-rotateXVal);
   fill(0,0,0);
   textFont(font);
-  text(zSlide + " " +foundGamma, -300, -300);
+  text(zSlide + " " + foundGamma + " " + errString, -300, -300);
   pop();
 
   arrow.show(xSlide)
