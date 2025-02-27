@@ -64,7 +64,7 @@ function setup() {
   button.hide()
 
   permissionsButton = createButton('grant tilt permissions');
-  button.hide();
+  permissionsButton.hide();
   
   this.arrow = new Arrow();
   pauseSpawn = 1000;
@@ -88,9 +88,9 @@ function setup() {
 
   if (typeof window.DeviceOrientationEvent !== 'undefined' && window.DeviceOrientationEvent.requestPermission) {
     foundDeviceOrientation = true
-    button.show();
-    button.position(100, 100);
-    button.onClicked(requesetPermissions)
+    permissionsButton.show();
+    permissionsButton.position(100, 100);
+    permissionsButton.onClicked(requesetPermissions)
   } else {
     // For older iOS versions (pre iOS 13.3) or non-iOS devices
     window.addEventListener('deviceorientation', adjustXSlideWithTilt, true);
