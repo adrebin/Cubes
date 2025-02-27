@@ -12,7 +12,7 @@ let pauseSpawn = 0;
 let font;
 
 function preload() {
-  font = loadFont('/public/LEMONMILK-Light.ttf');
+  font = loadFont('assets/LEMONMILK-Light.ttf');
 }
 
 function setup() {
