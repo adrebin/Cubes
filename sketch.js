@@ -28,21 +28,39 @@ function setup() {
   this.arrow = new Arrow();
   pauseSpawn = 1000;
   introBoxes();
-  // drawNBoxes(3, -200, 0, -200);
-  const swipeArea = document.body;
-  const hammer = new Hammer(swipeArea);
-  hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
+ 
+  
 
-  // Detect only left and right swipe gestures
-  hammer.on('swipeleft', function() {
-    xSlide -= xSlideAmount;
-    rotateXVal = clampToBoundary(rotateXVal - rotateXAmount)
-  });
+  // const hammer = new Hammer(swipeArea);
+  // hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
 
-  hammer.on('swiperight', function() {
-    xSlide += xSlideAmount;
-    rotateXVal = clampToBoundary(rotateXVal + rotateXAmount)
-  });
+  // // Detect only left and right swipe gestures
+  // hammer.on('swipeleft', function() {
+  //   xSlide -= xSlideAmount;
+  //   rotateXVal = clampToBoundary(rotateXVal - rotateXAmount)
+  // });
+
+  // hammer.on('swiperight', function() {
+  //   xSlide += xSlideAmount;
+  //   rotateXVal = clampToBoundary(rotateXVal + rotateXAmount)
+  // });
+  if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', function(event) {
+          // Get the gamma value, which is the tilt along the y-axis (left/right)
+          let gamma = event.gamma;
+
+          // Now you can use gamma to adjust xSlide and rotateXVal
+          if (gamma < -10) { // Device is tilted left
+            xSlide -= xSlideAmount;
+            rotateXVal = clampToBoundary(rotateXVal - rotateXAmount);
+          }
+
+          if (gamma > 10) { // Device is tilted right
+            xSlide += xSlideAmount;
+            rotateXVal = clampToBoundary(rotateXVal + rotateXAmount);
+          }
+        });
+  }
 }
 
 function drawNBoxes(numBoxes, xs, ys, zs){
